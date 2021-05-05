@@ -15,3 +15,9 @@ OR
 
 [install your shell's autocomplete]
 ``globus-mas --install-completion``
+
+
+Documentation
+-------------
+
+`Here <cli_reference.rst>`_

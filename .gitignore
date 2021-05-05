@@ -2,3 +2,5 @@
 .mypy_cache
 .vscode
 dist/
+*/*.pyc
+__pycache__/*
