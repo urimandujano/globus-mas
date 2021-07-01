@@ -5,7 +5,7 @@ import typer
 from globus_sdk import GlobusAPIError
 
 from globus_mas.authentication import get_basic_authorizer
-from globus_mas.cli.helpers import format_and_print
+from globus_mas.cli.helpers import format_and_print, verbosity_option
 from globus_mas.clients_client import ClientsClient
 
 app = typer.Typer(short_help="Work with Globus Clients")
@@ -30,6 +30,7 @@ def list(
     client: t.Optional[uuid.UUID] = typer.Option(
         None, help="A particular client to return data for."
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     List clients the authenticated entity is an owner of.
@@ -45,7 +46,7 @@ def list(
             response = cc.get_clients()
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -64,6 +65,7 @@ def list_credentials(
         ),
         envvar="AUTH_CLIENT_SECRET",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     List all credentials owned by the authenticated identity.
@@ -76,7 +78,7 @@ def list_credentials(
         response = cc.get_client_credentials(str(client_id))
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -96,6 +98,7 @@ def create_credential(
         envvar="AUTH_CLIENT_SECRET",
     ),
     credential_name: str = typer.Option(..., help="A name for the new credential."),
+    verbose: bool = verbosity_option,
 ):
     """
     Create a new credential for by the authenticated identity.
@@ -108,7 +111,7 @@ def create_credential(
         response = cc.create_client_credential(str(client_id), credential_name)
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -130,6 +133,7 @@ def delete_credential(
     credential_id: uuid.UUID = typer.Option(
         ..., help="The ID for the credential to delete."
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Delete a credential from the authenticated identity.
@@ -142,4 +146,4 @@ def delete_credential(
         response = cc.delete_client_credential(str(client_id), str(credential_id))
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)

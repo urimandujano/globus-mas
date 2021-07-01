@@ -8,7 +8,7 @@ from globus_mas.authentication import (
     authorizer_for_scope,
     get_confidential_app_auth_client,
 )
-from globus_mas.cli.helpers import format_and_print
+from globus_mas.cli.helpers import format_and_print, verbosity_option
 
 app = typer.Typer(
     short_help="Work with Globus Tokens",
@@ -25,6 +25,7 @@ def token_for_scope(
         ...,
         help="The scope to retrieve a token for.",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Initiate a login to generate a token valid for the listed scope.
@@ -35,7 +36,7 @@ def token_for_scope(
             "access_token": authorizer.access_token,
             "refresh_token": authorizer.refresh_token,
         }
-        format_and_print(tokens)
+        format_and_print(tokens, verbose=verbose)
     else:
         typer.secho("Unable to retrieve tokens!", fg=typer.colors.RED)
 
@@ -65,6 +66,7 @@ def introspect(
         "--full-details/",
         help="Include identity and session information in output.",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Introspect a provided token. The token must have been issued for the
@@ -83,7 +85,7 @@ def introspect(
         response = ac.oauth2_token_introspect(token, include=include)
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -108,6 +110,7 @@ def view_dependant_tokens(
         "an environment variable.",
         envvar="AUTH_TOKEN",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Display the dependant tokens for a given token. The token must have been
@@ -122,7 +125,7 @@ def view_dependant_tokens(
         response = ac.oauth2_get_dependent_tokens(token, {"access_type": "offline"})
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -145,6 +148,7 @@ def client_credentials(
         help="Return an access token for this scope. If not provided, tokens for default "
         "scopes will be returned. [repeatable]",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Get Access Tokens which directly represent the resource server (client id)
@@ -162,7 +166,7 @@ def client_credentials(
         response = ac.oauth2_client_credentials_tokens(scopes_string)
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -185,6 +189,7 @@ def revoke(
         "environment variable.",
         envvar="AUTH_TOKEN",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Revoke an Access or Refresh token such that they can no longer be used. The
@@ -199,4 +204,4 @@ def revoke(
         response = ac.oauth2_revoke_token(token)
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)

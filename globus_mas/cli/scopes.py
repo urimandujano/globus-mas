@@ -6,7 +6,7 @@ from globus_sdk import GlobusAPIError
 
 from globus_mas.authentication import get_basic_authorizer
 from globus_mas.cli.callbacks import scope_suffix_validator
-from globus_mas.cli.helpers import format_and_print
+from globus_mas.cli.helpers import format_and_print, verbosity_option
 from globus_mas.scopes_client import ScopesClient
 
 app = typer.Typer(short_help="Work with Globus Scopes")
@@ -38,6 +38,7 @@ def create(
         "--dependent-scope",
         help="A scope upon which the new scope should depend. [repeatable]",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Create a new scope associated with a client.
@@ -56,7 +57,7 @@ def create(
         )
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -83,6 +84,7 @@ def update(
         "--dependent-scope",
         help="A scope upon which the new scope should depend. [repeatable]",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Update an existing scope. scope_suffixes cannot be updated.
@@ -102,7 +104,7 @@ def update(
         )
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -120,6 +122,7 @@ def delete(
         envvar="AUTH_CLIENT_SECRET",
     ),
     scope_id: uuid.UUID = typer.Option(..., help="The scope UUID."),
+    verbose: bool = verbosity_option,
 ):
     """
     Delete a scope.
@@ -132,7 +135,7 @@ def delete(
         response = sc.delete_scope(scope_id)
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -149,6 +152,7 @@ def list(
         "from an environment variable.",
         envvar="AUTH_CLIENT_SECRET",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     List the scopes associated with a client.
@@ -161,7 +165,7 @@ def list(
         response = sc.list_scopes()
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)
 
 
 @app.command()
@@ -191,6 +195,7 @@ def search(
         help="Set this flag if search scopes are provided as UUIDs. Otherise, the "
         "scopes must be scope strings.",
     ),
+    verbose: bool = verbosity_option,
 ):
     """
     Search for a scope by UUID or scope string. A scope can be searched for if
@@ -209,4 +214,4 @@ def search(
             response = sc.get_scopes_by_string(*scopes)
     except GlobusAPIError as err:
         response = err
-    format_and_print(response)
+    format_and_print(response, verbose=verbose)

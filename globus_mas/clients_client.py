@@ -4,6 +4,8 @@ from globus_sdk import GlobusHTTPResponse
 from globus_sdk.authorizers import GlobusAuthorizer
 from globus_sdk.base import BaseClient
 
+from globus_mas.config import CURRENT_AUTH_URL
+
 _ClientsClient = t.TypeVar("_ClientsClient", bound="ClientsClient")
 
 
@@ -19,10 +21,11 @@ class ClientsClient(BaseClient):
     ) -> _ClientsClient:
         return cls(
             "groups",
-            base_url="https://auth.globus.org/",
+            base_url=CURRENT_AUTH_URL,
             http_timeout=10,
             authorizer=authorizer,
             environment=environment,
+            app_name="Globus Mas SDK - ClientsClient",
         )
 
     def get_clients(self) -> GlobusHTTPResponse:

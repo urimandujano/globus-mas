@@ -4,6 +4,8 @@ from globus_sdk import GlobusHTTPResponse
 from globus_sdk.authorizers import BasicAuthorizer
 from globus_sdk.base import BaseClient
 
+from globus_mas.config import CURRENT_AUTH_URL
+
 _ScopesClient = t.TypeVar("_ScopesClient", bound="ScopesClient")
 
 
@@ -16,10 +18,11 @@ class ScopesClient(BaseClient):
     ) -> _ScopesClient:
         return cls(
             "scopes",
-            base_url="https://auth.globus.org/",
+            base_url=CURRENT_AUTH_URL,
             http_timeout=10,
             authorizer=authorizer,
             environment=environment,
+            app_name="Globus Mas SDK - ScopesClient",
         )
 
     def get_scopes_by_id(self, *scopes: str) -> GlobusHTTPResponse:
